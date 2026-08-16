@@ -16,19 +16,34 @@ $danh_sach_sach = [
         "danh_muc" => "Kỹ năng sống"
     ]
 ];
+function kiemTraDauSach($ten_sach, $tac_gia, $danh_muc)
+{
+    if ($ten_sach == "" || $tac_gia == "" || $danh_muc == "") {
+        return false;
+    }
+
+    return true;
+}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $ten_sach = $_POST["ten_sach"];
     $tac_gia = $_POST["tac_gia"];
     $danh_muc = $_POST["danh_muc"];
-     $danh_sach_sach[] = [
-        "ten_sach" => $ten_sach,
-        "tac_gia" => $tac_gia,
-        "danh_muc" => $danh_muc
-    ];
 
+    if (kiemTraDauSach($ten_sach, $tac_gia, $danh_muc)) {
 
+        $danh_sach_sach[] = [
+            "ten_sach" => $ten_sach,
+            "tac_gia" => $tac_gia,
+            "danh_muc" => $danh_muc
+        ];
+
+    } else {
+
+        echo "Thông tin đầu sách không được để trống.";
+
+    }
 }
 
 ?>
