@@ -2,8 +2,19 @@
 
 require_once "book_model.php";
 
+$tu_khoa = trim($_GET["search"] ?? "");
 
-$danh_sach_sach = getAllBooks();
+if ($tu_khoa !== "") {
+
+    $danh_sach_sach = searchBooks($tu_khoa);
+
+} else {
+
+    $danh_sach_sach = getAllBooks();
+
+}
+
+$sach_sua = null;
 
 
 $sach_sua = null;
@@ -131,7 +142,58 @@ body {
 
     font-weight: bold;
 }
+.form-tim-kiem {
 
+    display: flex;
+
+    gap: 10px;
+
+    margin-bottom: 20px;
+
+    justify-content: center;
+
+}
+
+.form-tim-kiem input {
+
+    width: 450px;
+
+    padding: 10px;
+
+    border: 1px solid #888;
+
+    border-radius: 4px;
+
+    font-size: 15px;
+
+}
+
+.form-tim-kiem button,
+.form-tim-kiem a {
+
+    padding: 10px 18px;
+
+    border: 1px solid #555;
+
+    background: white;
+
+    cursor: pointer;
+
+    border-radius: 4px;
+
+    text-decoration: none;
+
+    color: #222;
+
+}
+
+.form-tim-kiem button {
+
+    background: #333;
+
+    color: white;
+
+}
 
 .noi-dung-form {
 
@@ -703,7 +765,24 @@ Thêm sách
 DANH SÁCH ĐẦU SÁCH
 </h2>
 
+<form method="GET" action="books.php" class="form-tim-kiem">
 
+    <input
+        type="text"
+        name="search"
+        placeholder="Nhập mã sách, tên sách, tác giả hoặc ISBN..."
+        value="<?php echo htmlspecialchars($_GET["search"] ?? ""); ?>"
+    >
+
+    <button type="submit">
+        Tìm kiếm
+    </button>
+
+    <a href="books.php">
+        Xóa tìm kiếm
+    </a>
+
+</form>
 <table>
 
 
@@ -844,9 +923,6 @@ Hoạt động
 
 <td>
 
-
-<!-- SỬA -->
-
 <form
     method="GET"
     action="books.php"
@@ -863,9 +939,6 @@ Sửa
 </button>
 
 </form>
-
-
-<!-- XÓA -->
 
 <form
     method="POST"
@@ -884,9 +957,6 @@ Xóa
 </button>
 
 </form>
-
-
-<!-- KHÓA -->
 
 <form
     method="POST"

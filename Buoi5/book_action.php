@@ -54,39 +54,39 @@ if (isset($_POST["them_sach"])) {
     $mo_ta = trim($_POST["mo_ta"] ?? "");
 
 
-    if (isBookCodeExists($ma_sach)) {
+   if (isBookCodeExists($ma_sach)) {
 
-        header("Location: books.php?error=ma_sach");
-
-        exit;
-    }
-
-
-    if (isISBNExists($isbn)) {
-
-        header("Location: books.php?error=isbn");
-
-        exit;
-    }
-
-
-    addBook(
-        $ma_sach,
-        $ten_sach,
-        $ma_tac_gia,
-        $tac_gia,
-        $danh_muc,
-        $nha_xuat_ban,
-        $nam_xuat_ban,
-        $isbn,
-        $gia_sach,
-        $mo_ta
-    );
-
-
-    header("Location: books.php?success=them");
+    header("Location: books.php?error=ma_sach");
 
     exit;
+}
+
+if (isISBNExists($isbn)) {
+
+    header("Location: books.php?error=isbn");
+
+    exit;
+}
+
+if (!addBook(
+    $ma_sach,
+    $ten_sach,
+    $ma_tac_gia,
+    $tac_gia,
+    $danh_muc,
+    $nha_xuat_ban,
+    $nam_xuat_ban,
+    $isbn,
+    $gia_sach,
+    $mo_ta
+)) {
+
+    die("Thêm sách thất bại.");
+}
+
+header("Location: books.php?success=them");
+
+exit;
 }
 
 if (isset($_POST["cap_nhat_sach"])) {

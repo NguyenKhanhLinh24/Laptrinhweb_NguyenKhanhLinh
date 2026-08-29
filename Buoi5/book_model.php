@@ -13,6 +13,39 @@ function getAllBooks()
     return $result;
 }
 
+
+function searchBooks($keyword)
+{
+    global $conn;
+
+    $keyword = "%" . $keyword . "%";
+
+    $sql = "SELECT * FROM books
+            WHERE ma_sach LIKE ?
+               OR ten_sach LIKE ?
+               OR ma_tac_gia LIKE ?
+               OR tac_gia LIKE ?
+               OR isbn LIKE ?
+            ORDER BY id DESC";
+
+    $stmt = mysqli_prepare($conn, $sql);
+
+    mysqli_stmt_bind_param(
+        $stmt,
+        "sssss",
+        $keyword,
+        $keyword,
+        $keyword,
+        $keyword,
+        $keyword
+    );
+
+    mysqli_stmt_execute($stmt);
+
+    return mysqli_stmt_get_result($stmt);
+}
+
+
 function getBookById($id)
 {
     global $conn;
@@ -21,7 +54,11 @@ function getBookById($id)
 
     $stmt = mysqli_prepare($conn, $sql);
 
-    mysqli_stmt_bind_param($stmt, "i", $id);
+    mysqli_stmt_bind_param(
+        $stmt,
+        "i",
+        $id
+    );
 
     mysqli_stmt_execute($stmt);
 
@@ -29,6 +66,92 @@ function getBookById($id)
 
     return mysqli_fetch_assoc($result);
 }
+
+
+function isBookCodeExists($ma_sach, $exclude_id = 0)
+{
+    global $conn;
+
+    if ($exclude_id > 0) {
+
+        $sql = "SELECT id
+                FROM books
+                WHERE ma_sach = ?
+                AND id != ?";
+
+        $stmt = mysqli_prepare($conn, $sql);
+
+        mysqli_stmt_bind_param(
+            $stmt,
+            "si",
+            $ma_sach,
+            $exclude_id
+        );
+
+    } else {
+
+        $sql = "SELECT id
+                FROM books
+                WHERE ma_sach = ?";
+
+        $stmt = mysqli_prepare($conn, $sql);
+
+        mysqli_stmt_bind_param(
+            $stmt,
+            "s",
+            $ma_sach
+        );
+    }
+
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
+
+    return mysqli_num_rows($result) > 0;
+}
+
+function isISBNExists($isbn, $exclude_id = 0)
+{
+    global $conn;
+
+    if ($exclude_id > 0) {
+
+        $sql = "SELECT id
+                FROM books
+                WHERE isbn = ?
+                AND id != ?";
+
+        $stmt = mysqli_prepare($conn, $sql);
+
+        mysqli_stmt_bind_param(
+            $stmt,
+            "si",
+            $isbn,
+            $exclude_id
+        );
+
+    } else {
+
+        $sql = "SELECT id
+                FROM books
+                WHERE isbn = ?";
+
+        $stmt = mysqli_prepare($conn, $sql);
+
+        mysqli_stmt_bind_param(
+            $stmt,
+            "s",
+            $isbn
+        );
+    }
+
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
+
+    return mysqli_num_rows($result) > 0;
+}
+
 
 function addBook(
     $ma_sach,
@@ -64,9 +187,9 @@ function addBook(
 
     $stmt = mysqli_prepare($conn, $sql);
 
-    mysqli_stmt_bind_param(
-        $stmt,
-        "ssssssisdss",
+   mysqli_stmt_bind_param(
+    $stmt,
+    "ssssssisdss",
         $ma_sach,
         $ten_sach,
         $ma_tac_gia,
@@ -80,7 +203,11 @@ function addBook(
         $trang_thai
     );
 
-    return mysqli_stmt_execute($stmt);
+    if (!mysqli_stmt_execute($stmt)) {
+    die("Lỗi thêm sách: " . mysqli_stmt_error($stmt));
+}
+
+return true;
 }
 
 function updateBook(
@@ -132,6 +259,7 @@ function updateBook(
     return mysqli_stmt_execute($stmt);
 }
 
+
 function deleteBook($id)
 {
     global $conn;
@@ -140,7 +268,11 @@ function deleteBook($id)
 
     $stmt = mysqli_prepare($conn, $sql);
 
-    mysqli_stmt_bind_param($stmt, "i", $id);
+    mysqli_stmt_bind_param(
+        $stmt,
+        "i",
+        $id
+    );
 
     return mysqli_stmt_execute($stmt);
 }
@@ -160,7 +292,13 @@ function toggleBookStatus($id)
 
     $stmt = mysqli_prepare($conn, $sql);
 
-    mysqli_stmt_bind_param($stmt, "i", $id);
+    mysqli_stmt_bind_param(
+        $stmt,
+        "i",
+        $id
+    );
 
     return mysqli_stmt_execute($stmt);
 }
+
+?>
